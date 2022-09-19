@@ -19,7 +19,7 @@ public class LocalTopologyRunner {
         builder.setBolt("email-extractor", new EmailExtractor())
                 .shuffleGrouping("commit-feed-listener");
 
-        builder.setBolt("email-counter", new EmailExtractor())
+        builder.setBolt("email-counter", new EmailCounter())
                 .fieldsGrouping("email-extractor", new Fields("email"));
 
         Config config = new Config();
@@ -27,14 +27,15 @@ public class LocalTopologyRunner {
 
         StormTopology topology = builder.createTopology();
 
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("github-commit-count-topology",
-                config,
-                topology);
+        try (LocalCluster cluster = new LocalCluster()) {
+            cluster.submitTopology("github-commit-count-topology",
+                    config,
+                    topology);
 
-        Utils.sleep(TEN_MINUTES);
-        cluster.killTopology("github-commit-count-topology");
-        cluster.shutdown();
+            Utils.sleep(TEN_MINUTES);
+            cluster.killTopology("github-commit-count-topology");
+            cluster.shutdown();
+        }
 
     }
 }
