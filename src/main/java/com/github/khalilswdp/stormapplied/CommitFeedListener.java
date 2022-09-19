@@ -24,6 +24,8 @@ public class CommitFeedListener extends BaseRichSpout {
     public void open(Map<String, Object> configMap,
                      TopologyContext context,
                      SpoutOutputCollector outputCollector) {
+        // If we're writing code for a spout that deals with a live data source, such as a message queue
+        // This is where we'd put the code for connecting to that data source
         this.outputCollector = outputCollector;
 
         try {
@@ -38,7 +40,9 @@ public class CommitFeedListener extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        commits.stream().forEach(commit -> outputCollector.emit(new Values(commit)));
+        commits.forEach(
+                        commit ->
+                                outputCollector.emit(new Values(commit)));
     }
 
     @Override
