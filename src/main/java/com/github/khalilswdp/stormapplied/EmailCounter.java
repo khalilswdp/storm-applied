@@ -17,7 +17,7 @@ public class EmailCounter extends BaseBasicBolt {
     // This method gets called as storm prepares the bolt before execution and is the method where we'd perform any setup for our bolt
     // In our case: instantiating the in memory map
     public void prepare(Map<String, Object> topoConf, TopologyContext context) {
-        counts = Collections.synchronizedMap(new HashMap<String, Integer>());
+        counts = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override
@@ -28,11 +28,9 @@ public class EmailCounter extends BaseBasicBolt {
     }
 
     private void printCounts() {
-        for (String email: counts.keySet()) {
-            System.out.println(
-                    String.format("%s has count of %s", email, counts.get(email))
-            );
-        }
+        counts.keySet().forEach(email ->
+                System.out.printf("%s has count of %s%n", email, counts.get(email))
+                );
     }
 
     private Integer countFor(String email) {
