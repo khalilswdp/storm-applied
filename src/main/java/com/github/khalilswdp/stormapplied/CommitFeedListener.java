@@ -1,5 +1,6 @@
 package com.github.khalilswdp.stormapplied;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 public class CommitFeedListener extends BaseRichSpout {
 
     private SpoutOutputCollector outputCollector;
@@ -33,6 +35,7 @@ public class CommitFeedListener extends BaseRichSpout {
                     Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("changelog.txt")),
                     Charset.defaultCharset().name()
             );
+            log.info("Commit Feed Listener has finished loading up the entire changelog.txt and is ready to start emitting commit by commit");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -40,9 +43,13 @@ public class CommitFeedListener extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
+        log.info("Commit Feed Listener will start emitting commits");
         commits.forEach(
-                        commit ->
-                                outputCollector.emit(new Values(commit)));
+                        commit -> {
+                            outputCollector.emit(new Values(commit));
+                            log.info(String.format("Commit Feed Listener has emitted %s", commit));
+                        });
+        log.info("Commit Feed Listener has emitted all commits");
     }
 
     @Override
