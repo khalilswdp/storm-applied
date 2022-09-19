@@ -6,6 +6,7 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.tuple.Tuple;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class EmailCounter extends BaseBasicBolt {
     // This method gets called as storm prepares the bolt before execution and is the method where we'd perform any setup for our bolt
     // In our case: instantiating the in memory map
     public void prepare(Map<String, Object> topoConf, TopologyContext context) {
-        counts = new HashMap<>();
+        counts = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override
@@ -28,9 +29,7 @@ public class EmailCounter extends BaseBasicBolt {
 
     private void printCounts() {
         for (String email: counts.keySet()) {
-            System.out.println(
-                    String.format("%s has count of %s", email, counts.get(email))
-            );
+            System.out.printf("%s has count of %s%n", email, counts.get(email));
         }
     }
 
