@@ -1,5 +1,6 @@
 package com.github.khalilswdp.stormapplied;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class EmailCounter extends BaseBasicBolt {
     private Map<String, Integer> counts;
 
@@ -18,12 +20,14 @@ public class EmailCounter extends BaseBasicBolt {
     // In our case: instantiating the in memory map
     public void prepare(Map<String, Object> topoConf, TopologyContext context) {
         counts = Collections.synchronizedMap(new HashMap<>());
+        log.info("Preparing Email Counter (initializing the map)");
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
         String email = tuple.getStringByField("email");
         counts.put(email, countFor(email) + 1);
+        log.info(String.format("Updating the Email %s Counter to %d", email, countFor(email) + 1));
         printCounts();
     }
 
