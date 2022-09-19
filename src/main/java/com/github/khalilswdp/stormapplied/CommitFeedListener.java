@@ -38,9 +38,7 @@ public class CommitFeedListener extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        for (String commit: commits) {
-            outputCollector.emit(new Values(commit));
-        }
+        commits.stream().forEach(commit -> outputCollector.emit(new Values(commit)));
     }
 
     @Override
