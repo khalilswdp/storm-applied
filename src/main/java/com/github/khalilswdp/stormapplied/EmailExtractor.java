@@ -14,8 +14,10 @@ public class EmailExtractor extends BaseBasicBolt {
     @Override
     public void execute(Tuple tuple, BasicOutputCollector outputCollector) {
         String commit = tuple.getStringByField("commit");
+        log.info(String.format("About to extract the email from the commit %s", commit));
         String[] parts = commit.split(" ");
         outputCollector.emit(new Values(parts[1]));
+        log.info(String.format("Email %s extracted and emitted", parts[1]));
     }
 
     @Override
